@@ -4,7 +4,7 @@
 #include "vector_math.h"
 using namespace vmath;
 
-#include "HD/hd.h"
+#include "HD/hd.h" 
 
 
 /*******************************************************************************
@@ -19,7 +19,7 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 
 	// Stiffness, i.e. k value, of the sphere.  Higher stiffness results
 	// in a harder surface.
-	const double sphereStiffness = .25;
+	const double sphereStiffness = 1.f;
 
 	hdBeginFrame(hdGetCurrentDevice());
 
@@ -99,12 +99,13 @@ int main() {
 	HDSchedulerHandle hSphereCallback = hdScheduleAsynchronous(
 		FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
 
-	printf("Sphere example.\n");
-	printf("Move the device around to feel a frictionless sphere\n\n");
-	printf("Press any key to quit.\n\n");
+	vec3<double> eePosition = vec3<double>(-1, -1, -1);
 
+	//system("pause");
 	while (!_kbhit())
 	{
+		hdGetDoublev(HD_CURRENT_POSITION, eePosition);
+		printf("position x: %lf \n", eePosition.x);
 		if (!hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS))
 		{
 			fprintf(stderr, "\nThe main scheduler callback has exited\n");
