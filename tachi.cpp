@@ -1,3 +1,5 @@
+#define dllexport __declspec(dllexport)
+
 #include <cstdio>
 #include <cassert>
 #include <conio.h>
@@ -5,6 +7,12 @@
 using namespace vmath;
 
 #include "HD/hd.h" 
+
+//Global variable and handle declarations
+HDSchedulerHandle hSphereCallback;
+HHD hHD;
+int sphereRadius;
+
 
 
 /*******************************************************************************
@@ -73,16 +81,15 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 	return HD_CALLBACK_CONTINUE;
 }
 
-int main() {
+ extern "C" dllexport bool init() {
 
 	HDErrorInfo error;
 	// Initialize the default haptic device.
-	HHD hHD = hdInitDevice(HD_DEFAULT_DEVICE);
+	hHD = hdInitDevice(HD_DEFAULT_DEVICE);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		printf("Failed to initialize haptic device");
-		system("pause");
-		return -1;
+		return(false);
 	}
 
 	// Start the servo scheduler and enable forces.
@@ -91,33 +98,26 @@ int main() {
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		printf("Failed to start scheduler");
-		system("pause");
-		return -1;
+		return(false);
 	}
+	
+	return(true);
+}
 
+ extern "C" dllexport void addSphere() {
 	// Application loop - schedule our call to the main callback.
-	HDSchedulerHandle hSphereCallback = hdScheduleAsynchronous(
-		FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+	hSphereCallback = hdScheduleAsynchronous(FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+}
 
-	vec3<double> eePosition = vec3<double>(-1, -1, -1);
+ extern "C" dllexport void getPosition(double position[3])
+{
+	hdGetDoublev(HD_CURRENT_POSITION, position);
+}
 
-	//system("pause");
-	while (!_kbhit())
-	{
-		hdGetDoublev(HD_CURRENT_POSITION, eePosition);
-		printf("position x: %lf \n", eePosition.x);
-		if (!hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS))
-		{
-			fprintf(stderr, "\nThe main scheduler callback has exited\n");
-			system("pause");
-			break;
-		}
-	}
-
+ extern "C" dllexport void shutdown() {
 	// For cleanup, unschedule our callbacks and stop the servo loop.
+	hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS);
 	hdStopScheduler();
 	hdUnschedule(hSphereCallback);
 	hdDisableDevice(hHD);
-
-	return 0;
 }
