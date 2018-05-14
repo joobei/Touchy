@@ -14,7 +14,7 @@ This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under d
 
 ### Unity Side:
 - Copy the plugin to your Assets/Plugins folder
-- Drag HapticManager.cs script to an Empty.cs
+- Drag HapticManager.cs script to an Empty GameObject
 - Play
 - HapticManager.cs, in the Start() method, adds a sphere of radius 30 mm at (0,0,0)
 
