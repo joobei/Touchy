@@ -143,9 +143,10 @@ extern "C" dllexport void setSpherePosition(double x, double y, double z)
 	spherePosition.z = z;
 }
 
-
+//hasn't been tested
 extern "C" dllexport void getEEPosition(double position[3])
 {
+
     hdGetDoublev(HD_CURRENT_POSITION, position);
 }
 
