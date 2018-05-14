@@ -1,6 +1,6 @@
 /*
- * This file is part of Tachi (https://github.com/uhhhci/tachi).
- * Copyright (c) 2015 Nikolaos Katzakis
+ * This file is part of Touchy (https://github.com/uhhhci/Touchy).
+ * Copyright (c) 2015 Nicholas Katzakis
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
