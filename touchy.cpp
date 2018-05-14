@@ -17,9 +17,9 @@
 
 #define dllexport __declspec(dllexport)
 
-#include <cstdio>
-#include <cassert>
-#include <conio.h>
+//#include <cstdio>
+//#include <cassert>
+//#include <conio.h>
 #include "vector_math.h"
 using namespace vmath;
 
@@ -28,15 +28,17 @@ using namespace vmath;
 //Global variable and handle declarations
 HDSchedulerHandle hSphereCallback;
 HHD hHD;
-int sphereRadius;
+
+//Sphere globals (only one sphere for now)
+double sphereRadius;
+vec3<double> spherePosition;
 
 /*******************************************************************************
  Generates an opposing force if the device attempts to penetrate the sphere.
  *******************************************************************************/
 HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 {
-    const double sphereRadius = 40.0;
-    const vec3<double> spherePosition = vec3<double>(0, 0, 0);
+
     
     // Stiffness, i.e. k value, of the sphere.  Higher stiffness results
     // in a harder surface.
@@ -81,14 +83,11 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
     
     HDErrorInfo error;
     if (HD_DEVICE_ERROR(error = hdGetError()))
-    {
-        //hduPrintError(stderr, &error, "Error during main scheduler callback\n");
-        printf("Error during main scheduler callback\n");
-        
-        /*if (hduIsSchedulerError(&error))
-         {
+    {     
+       if (error.errorCode == HD_SCHEDULER_FULL)
+        {
          return HD_CALLBACK_DONE;
-         }*/
+        }
     }
     
     return HD_CALLBACK_CONTINUE;
@@ -101,28 +100,51 @@ extern "C" dllexport bool init() {
     hHD = hdInitDevice(HD_DEFAULT_DEVICE);
     if (HD_DEVICE_ERROR(error = hdGetError()))
     {
-        printf("Failed to initialize haptic device");
+        //printf("Failed to initialize haptic device");
         return(false);
     }
+
+	//initialize default sphere attributes so that variables are not empty
+	const double sphereRadius = 40.0;  //40 millimeters
+	const vec3<double> spherePosition = vec3<double>(0, 0, 0);
     
     // Start the servo scheduler and enable forces.
     hdEnable(HD_FORCE_OUTPUT);
     hdStartScheduler();
     if (HD_DEVICE_ERROR(error = hdGetError()))
     {
-        printf("Failed to start scheduler");
+        //printf("Failed to start scheduler");
         return(false);
     }
     
     return(true);
 }
 
-extern "C" dllexport void addSphere() {
-    // Application loop - schedule our call to the main callback.
+extern "C" dllexport void addSphere(double radius, double x, double y, double z) {
+	sphereRadius = radius;
+	spherePosition.x = x;
+	spherePosition.y = y;
+	spherePosition.z = z;
+
+	// Application loop - schedule our call to the main callback.
     hSphereCallback = hdScheduleAsynchronous(FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
 }
 
-extern "C" dllexport void getPosition(double position[3])
+extern "C" dllexport void setSphereRadius(double radius) 
+{
+	sphereRadius = radius;
+}
+
+
+extern "C" dllexport void setSpherePosition(double x, double y, double z)
+{
+	spherePosition.x = x;
+	spherePosition.y = y;
+	spherePosition.z = z;
+}
+
+
+extern "C" dllexport void getEEPosition(double position[3])
 {
     hdGetDoublev(HD_CURRENT_POSITION, position);
 }
