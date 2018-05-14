@@ -27,4 +27,4 @@ This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under d
 ### TODO
 - Multiple Haptic Devices
 - Automatic VR/Haptic calibration method
-- <Your suggestion here...>
+- Your suggestion here...
