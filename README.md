@@ -20,9 +20,9 @@ This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under d
 
 ### Customize
 - Both the haptic plugin source and the Unity3D manager source is self-explanatory.
+- Due to Unity3D/Mono limitations, if you make changes to the C/C++ library you must completely close and restart unity to load the new build of the .dll.
 - Contributions are welcome.
 
-<strong>!!!! Due to Unity3D/Mono limitations, you MUST completely close and restart unity to load your new build of the .dll if you make changes !!!!</strong>
 
 ### TODO
 - Multiple Haptic Devices
