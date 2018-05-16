@@ -135,6 +135,11 @@ extern "C" dllexport void setSphereRadius(double radius)
 	sphereRadius = radius;
 }
 
+extern "C" dllexport double getSphereRadius()
+{
+	return sphereRadius;
+}
+
 
 extern "C" dllexport void setSpherePosition(double x, double y, double z)
 {
