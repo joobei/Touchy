@@ -38,13 +38,23 @@ public class HapticManager : MonoBehaviour {
     [DllImport("Touchy")]
     public static extern void getEEPosition(double [] position);
 
+    [DllImport("Touchy")]
+    public static extern void setSphereRadius(double radius);
+
+    [DllImport("Touchy")]
+    public static extern double getSphereRadius();
+
+    [DllImport("Touchy")]
+    public static extern int getButtonState();
+
     private GameObject hapticCursor;
+    public GameObject targetSphere;
 
     // Use this for initialization
     void Start () {
 
         bool worked = init();
-        if (worked) { print("It worked!"); }
+        if (worked) { print("Haptic Device Initialized."); }
         else { print("Haptic Initialization Error!"); }
 
         //Add a sphere to the world upon starting
@@ -56,29 +66,52 @@ public class HapticManager : MonoBehaviour {
 
         //spawn a haptic cursor
         hapticCursor = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        hapticCursor.transform.localScale.Set(0.03f, 0.03f, 0.03f);
+        hapticCursor.name = "EndEffector";
+        hapticCursor.transform.localScale = Vector3.one * 0.003f;
     }
 
     private void Update()
     {
+        //update end effector position
         double[] tempPosition = new double[3];
         getEEPosition(tempPosition);
         Vector3 tempVector;
-        tempVector.x = (float)tempPosition[0];
-        tempVector.y = (float)tempPosition[1];
-        tempVector.z = (float)tempPosition[2];
-
+        tempVector.x = (float)tempPosition[0]/1000;
+        tempVector.y = (float)tempPosition[1]/1000;
+        tempVector.z = (float)tempPosition[2]/1000;
         hapticCursor.transform.position = tempVector;
+
+        if (Input.GetKeyDown(KeyCode.KeypadMinus))
+        {
+            double currentRadius = getSphereRadius();
+            setSphereRadius((double)(currentRadius - 10));
+            Vector3 previousScale = targetSphere.transform.localScale;
+            Vector3 scaleChange = new Vector3(0.01f, 0.01f, 0.01f);
+            targetSphere.transform.localScale = previousScale - scaleChange;
+        }
+
+        if (Input.GetKeyDown(KeyCode.KeypadPlus))
+        {
+            double currentRadius = getSphereRadius();
+            setSphereRadius((double)(currentRadius + 10));
+            Vector3 previousScale = targetSphere.transform.localScale;
+            Vector3 scaleChange = new Vector3(0.01f, 0.01f, 0.01f);
+            targetSphere.transform.localScale = previousScale + scaleChange;
+        }
+
+        int buttons = getButtonState();
+        if (buttons != 0)
+        { 
+            //Handle Button Presses
+            //1 - 2 or both buttons 
+            print(buttons);
+        }
     }
 
     void OnApplicationQuit()
     {
-        shutdown();
+        shutdown();   
     }
 
-    //set sphere size in mm
-    void scaleSphere(int size)
-    {
 
-    }
 }

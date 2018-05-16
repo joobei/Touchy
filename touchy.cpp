@@ -148,11 +148,16 @@ extern "C" dllexport void setSpherePosition(double x, double y, double z)
 	spherePosition.z = z;
 }
 
-//hasn't been tested
 extern "C" dllexport void getEEPosition(double position[3])
 {
 
     hdGetDoublev(HD_CURRENT_POSITION, position);
+}
+extern "C" dllexport int getButtonState()
+{
+	HDint buttonState;
+	hdGetIntegerv(HD_CURRENT_BUTTONS, &buttonState);
+	return buttonState;
 }
 
 extern "C" dllexport void shutdown() {
