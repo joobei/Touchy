@@ -36,6 +36,12 @@ public class HapticManager : MonoBehaviour {
     public static extern void addSphere(double radius, double x, double y, double z);
 
     [DllImport("Touchy")]
+    public static extern void disableSphere();
+
+    [DllImport("Touchy")]
+    public static extern void enableSphere();
+
+    [DllImport("Touchy")]
     public static extern void getEEPosition(double [] position);
 
     [DllImport("Touchy")]
@@ -47,8 +53,18 @@ public class HapticManager : MonoBehaviour {
     [DllImport("Touchy")]
     public static extern int getButtonState();
 
-    private GameObject hapticCursor;
+    public GameObject hapticCursor;
     public GameObject targetSphere;
+
+    //Event for stylus button
+    public delegate void StylusAction();
+    public static event StylusAction OnStylusButton;
+
+    [Tooltip("The desired sphere radius in mm")]
+    public float radius;
+    public float stylusButtonInterval;
+
+    private float lastTime;
 
     // Use this for initialization
     void Start () {
@@ -62,12 +78,12 @@ public class HapticManager : MonoBehaviour {
         //to Find all game objects with sphere collider
         //and add them to the haptic space
         //but this also requires to changes to the Touchy plugin.
-        addSphere(30f,0,0,0);
+        Vector3 spherePos = targetSphere.transform.position;
+        addSphere(radius, spherePos.x, spherePos.y, spherePos.z);
 
-        //spawn a haptic cursor
-        hapticCursor = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        hapticCursor.name = "EndEffector";
-        hapticCursor.transform.localScale = Vector3.one * 0.003f;
+        //Apply the radius to the sphere in Unity
+        float radiusMeters = radius * 0.001f; //convert form mm to m
+        targetSphere.transform.localScale = Vector3.one * radiusMeters * 2;
     }
 
     private void Update()
@@ -76,35 +92,36 @@ public class HapticManager : MonoBehaviour {
         double[] tempPosition = new double[3];
         getEEPosition(tempPosition);
         Vector3 tempVector;
-        tempVector.x = (float)tempPosition[0]/1000;
+        tempVector.x = (float)tempPosition[0]/1000; //convert from mm to m
         tempVector.y = (float)tempPosition[1]/1000;
-        tempVector.z = (float)tempPosition[2]/1000;
+        tempVector.z = (float)-tempPosition[2]/1000;
         hapticCursor.transform.position = tempVector;
 
         if (Input.GetKeyDown(KeyCode.KeypadMinus))
         {
             double currentRadius = getSphereRadius();
             setSphereRadius((double)(currentRadius - 10));
-            Vector3 previousScale = targetSphere.transform.localScale;
-            Vector3 scaleChange = new Vector3(0.01f, 0.01f, 0.01f);
-            targetSphere.transform.localScale = previousScale - scaleChange;
+
+            targetSphere.transform.localScale -= new Vector3(0.02f, 0.02f, 0.02f);
         }
 
         if (Input.GetKeyDown(KeyCode.KeypadPlus))
         {
             double currentRadius = getSphereRadius();
             setSphereRadius((double)(currentRadius + 10));
-            Vector3 previousScale = targetSphere.transform.localScale;
-            Vector3 scaleChange = new Vector3(0.01f, 0.01f, 0.01f);
-            targetSphere.transform.localScale = previousScale + scaleChange;
+
+            targetSphere.transform.localScale += new Vector3(0.02f, 0.02f, 0.02f);
         }
 
-        int buttons = getButtonState();
-        if (buttons != 0)
-        { 
-            //Handle Button Presses
-            //1 - 2 or both buttons 
-            print(buttons);
+        int stylusButtons = getButtonState();
+        //Handle button presses (1, 2 or both buttons)
+        if (stylusButtons != 0 && Time.time - lastTime > stylusButtonInterval)
+        {
+            if (OnStylusButton != null)
+            {
+                OnStylusButton();
+            }
+            lastTime = Time.time;
         }
     }
 
@@ -112,6 +129,4 @@ public class HapticManager : MonoBehaviour {
     {
         shutdown();   
     }
-
-
 }
