@@ -193,13 +193,13 @@ extern "C" dllexport void startCenterCallback(double radius, double x, double y,
     hSphereCallback = hdScheduleAsynchronous(CallbackToSphereCenter, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
 }
 
-extern "C" dllexport void stopCenterCallback() {
+extern "C" dllexport void stopCallback() {
     // For cleanup, unschedule our callbacks and stop the servo loop.
     hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS);
     hdUnschedule(hSphereCallback);
 }
 
-extern "C" dllexport void addSphere(double radius, double x, double y, double z) {
+extern "C" dllexport void startSphereCallback(double radius, double x, double y, double z) {
     sphereRadius = radius;
     spherePosition.x = x;
     spherePosition.y = y;
