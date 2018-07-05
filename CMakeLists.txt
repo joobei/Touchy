@@ -14,4 +14,4 @@ target_link_libraries(${PROJECT_NAME} hd)
 #to your unity Assets/Plugins folder automatically
 #with every build
 
-#add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> $ENV{Unity_Plugins_Folder}${PROJECT_NAME}.dll)
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${PROJECT_NAME}> $ENV{Unity_Plugins_Folder}\\${PROJECT_NAME}.dll)
