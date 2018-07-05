@@ -23,6 +23,8 @@
 #include "vector_math.h"
 using namespace vmath;
 
+
+
 #include "HD/hd.h" //part of 3DS OpenHaptics
 
 //Global variable and handle declarations
@@ -34,7 +36,6 @@ double sphereRadius;
 vec3<double> spherePosition;
 
 //Used to pause the sphere callback and thus force feedback
-bool isCallbackActive = false;
 
 /*******************************************************************************
 Generates a force to drive the cursor to the center of the sphere.
@@ -105,42 +106,41 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 
     hdBeginFrame(hdGetCurrentDevice());
 
-    if (isCallbackActive)
-    {
-        // Get the position of the device.
-        vec3<double> cursorPosition;
-        hdGetDoublev(HD_CURRENT_POSITION, cursorPosition);
 
-        // Find the distance between the device and the center of the
-        // sphere.
-        vec3<double> newvec = (cursorPosition - spherePosition);
-        double distance = length(newvec);
+	// Get the position of the device.
+	vec3<double> cursorPosition;
+	hdGetDoublev(HD_CURRENT_POSITION, cursorPosition);
 
-        // If the user is within the sphere -- i.e. if the distance from the user to
-        // the center of the sphere is less than the sphere radius -- then the user
-        // is penetrating the sphere and a force should be commanded to repel him
-        // towards the surface.
-        if (distance < sphereRadius)
-        {
-            // Calculate the penetration distance.
-            double penetrationDistance = sphereRadius - distance;
+	// Find the distance between the device and the center of the
+	// sphere.
+	vec3<double> newvec = (cursorPosition - spherePosition);
+	double distance = length(newvec);
 
-            // Create a unit vector in the direction of the force, this will always
-            // be outward from the center of the sphere through the user's
-            // position.
-            vec3<double> forceDirection = (cursorPosition - spherePosition) / distance;
+	// If the user is within the sphere -- i.e. if the distance from the user to
+	// the center of the sphere is less than the sphere radius -- then the user
+	// is penetrating the sphere and a force should be commanded to repel him
+	// towards the surface.
+	if (distance < sphereRadius)
+	{
+		// Calculate the penetration distance.
+		double penetrationDistance = sphereRadius - distance;
 
-            // Use F=kx to create a force vector that is away from the center of
-            // the sphere and proportional to the penetration distance, and scaled
-            // by the object stiffness.
-            // Hooke's law explicitly:
-            double k = sphereStiffness;
-            vec3<double> x = penetrationDistance * forceDirection;
-            vec3<double> f = k * x;
-            hdSetDoublev(HD_CURRENT_FORCE, f);
-        }
+		// Create a unit vector in the direction of the force, this will always
+		// be outward from the center of the sphere through the user's
+		// position.
+		vec3<double> forceDirection = (cursorPosition - spherePosition) / distance;
 
-    }
+		// Use F=kx to create a force vector that is away from the center of
+		// the sphere and proportional to the penetration distance, and scaled
+		// by the object stiffness.
+		// Hooke's law explicitly:
+		double k = sphereStiffness;
+		vec3<double> x = penetrationDistance * forceDirection;
+		vec3<double> f = k * x;
+		hdSetDoublev(HD_CURRENT_FORCE, f);
+	}
+
+    
 
     hdEndFrame(hdGetCurrentDevice());
 
@@ -168,7 +168,7 @@ extern "C" dllexport bool init() {
     }
 
     //initialize default sphere attributes so that variables are not empty
-    const double sphereRadius = 40.0;  //40 millimeters
+    sphereRadius = 40.0;  //40 millimeters
     spherePosition = vec3<double>(0, 0, 0);
 
     // Start the servo scheduler and enable forces.
@@ -205,17 +205,8 @@ extern "C" dllexport void addSphere(double radius, double x, double y, double z)
     spherePosition.y = y;
     spherePosition.z = z;
 
-    isCallbackActive = true;
     // Application loop - schedule our call to the main callback.
     hSphereCallback = hdScheduleAsynchronous(FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
-}
-
-extern "C" dllexport void disableSphere() {
-    isCallbackActive = false;
-}
-
-extern "C" dllexport void enableSphere() {
-    isCallbackActive = true;
 }
 
 extern "C" dllexport void setSphereRadius(double radius)
