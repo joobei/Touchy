@@ -46,7 +46,7 @@ HDCallbackCode HDCALLBACK CallbackToSphereCenter(void *data)
     // in a harder surface.
     const double sphereStiffness = 1.f;
 
-    hdBeginFrame(hdGetCurrentDevice());
+    hdBeginFrame(hHD);
 
     // Get the position of the device.
     vec3<double> cursorPosition;
@@ -81,7 +81,7 @@ HDCallbackCode HDCALLBACK CallbackToSphereCenter(void *data)
         hdSetDoublev(HD_CURRENT_FORCE, forceDirection);
     }
 
-    hdEndFrame(hdGetCurrentDevice());
+    hdEndFrame(hHD);
 
     HDErrorInfo error;
     if (HD_DEVICE_ERROR(error = hdGetError()))
@@ -104,7 +104,7 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
     // in a harder surface.
     const double sphereStiffness = 1.f;
 
-    hdBeginFrame(hdGetCurrentDevice());
+    hdBeginFrame(hHD);
 
 
 	// Get the position of the device.
@@ -141,8 +141,8 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 	}
 
     
+    hdEndFrame(hHD);
 
-    hdEndFrame(hdGetCurrentDevice());
 
     HDErrorInfo error;
     if (HD_DEVICE_ERROR(error = hdGetError()))
@@ -256,7 +256,10 @@ extern "C" dllexport void getEEPosition(double position[3])
 }
 extern "C" dllexport int getButtonState(int bstate)
 {
+	hdBeginFrame(hHD);
     hdGetIntegerv(HD_CURRENT_BUTTONS, &bstate);
+
+	hdEndFrame(hHD);
 
 	//Return success/error code
 	HDErrorInfo error;
