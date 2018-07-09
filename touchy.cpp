@@ -257,7 +257,8 @@ extern "C" dllexport void getEEPosition(double position[3])
 extern "C" dllexport int getButtonState(int bstate)
 {
 	hdBeginFrame(hHD);
-    hdGetIntegerv(HD_CURRENT_BUTTONS, &bstate);
+    
+	hdGetIntegerv(HD_CURRENT_BUTTONS, &bstate);
 
 	hdEndFrame(hHD);
 
