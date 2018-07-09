@@ -156,15 +156,14 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
     return HD_CALLBACK_CONTINUE;
 }
 
-extern "C" dllexport bool init() {
+extern "C" dllexport int init() {
 
     HDErrorInfo error;
     // Initialize the default haptic device.
     hHD = hdInitDevice(HD_DEFAULT_DEVICE);
     if (HD_DEVICE_ERROR(error = hdGetError()))
     {
-        //printf("Failed to initialize haptic device");
-        return(false);
+        return(error.errorCode);
     }
 
     //initialize default sphere attributes so that variables are not empty
@@ -176,14 +175,13 @@ extern "C" dllexport bool init() {
     hdStartScheduler();
     if (HD_DEVICE_ERROR(error = hdGetError()))
     {
-        //printf("Failed to start scheduler");
-        return(false);
+		return(error.errorCode);
     }
 
-    return(true);
+    return(HD_SUCCESS);
 }
 
-extern "C" dllexport void startCenterCallback(double radius, double x, double y, double z) {
+extern "C" dllexport int startCenterCallback(double radius, double x, double y, double z) {
     sphereRadius = radius;
     spherePosition.x = x;
     spherePosition.y = y;
@@ -191,15 +189,36 @@ extern "C" dllexport void startCenterCallback(double radius, double x, double y,
 
     // Application loop - schedule our call to the main callback.
     hSphereCallback = hdScheduleAsynchronous(CallbackToSphereCenter, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+	
+	//Return success/error code
+	HDErrorInfo error;
+	error = hdGetError();
+	return(error.errorCode);
 }
 
-extern "C" dllexport void stopCallback() {
-    // For cleanup, unschedule our callbacks and stop the servo loop.
+extern "C" dllexport int stopCallback() {
+	HDErrorInfo error;
+    
+	// For cleanup, unschedule our callbacks and stop the servo loop.
     hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS);
-    hdUnschedule(hSphereCallback);
+	
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode);
+	}
+    
+	//unschedule the callback
+	hdUnschedule(hSphereCallback);
+	
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode);
+	}
+
+	return HD_SUCCESS;
 }
 
-extern "C" dllexport void startSphereCallback(double radius, double x, double y, double z) {
+extern "C" dllexport int startSphereCallback(double radius, double x, double y, double z) {
     sphereRadius = radius;
     spherePosition.x = x;
     spherePosition.y = y;
@@ -207,6 +226,10 @@ extern "C" dllexport void startSphereCallback(double radius, double x, double y,
 
     // Application loop - schedule our call to the main callback.
     hSphereCallback = hdScheduleAsynchronous(FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+	//Return success/error code
+	HDErrorInfo error;
+	error = hdGetError();
+	return(error.errorCode);
 }
 
 extern "C" dllexport void setSphereRadius(double radius)
@@ -231,17 +254,40 @@ extern "C" dllexport void getEEPosition(double position[3])
 {
     hdGetDoublev(HD_CURRENT_POSITION, position);
 }
-extern "C" dllexport int getButtonState()
+extern "C" dllexport int getButtonState(int bstate)
 {
-    HDint buttonState;
-    hdGetIntegerv(HD_CURRENT_BUTTONS, &buttonState);
-    return buttonState;
+    hdGetIntegerv(HD_CURRENT_BUTTONS, &bstate);
+
+	//Return success/error code
+	HDErrorInfo error;
+	error = hdGetError();
+	return(error.errorCode);
 }
 
-extern "C" dllexport void shutdown() {
+extern "C" dllexport int shutdown() {
+	HDErrorInfo error;
+
     // For cleanup, unschedule our callbacks and stop the servo loop.
     hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS);
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode+1000);
+	}
     hdStopScheduler();
-    hdUnschedule(hSphereCallback);
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode+2000);
+	}
+   /* hdUnschedule(hSphereCallback);
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode+3000);
+	}*/
     hdDisableDevice(hHD);
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode+4000);
+	}
+
+	return HD_SUCCESS;
 }
