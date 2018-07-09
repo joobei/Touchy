@@ -252,7 +252,9 @@ extern "C" dllexport void setSpherePosition(double x, double y, double z)
 
 extern "C" dllexport void getEEPosition(double position[3])
 {
+	hdBeginFrame(hHD);
     hdGetDoublev(HD_CURRENT_POSITION, position);
+	hdEndFrame(hHD);
 }
 extern "C" dllexport int getButtonState(int bstate)
 {
