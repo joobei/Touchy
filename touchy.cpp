@@ -28,12 +28,13 @@ using namespace vmath;
 #include "HD/hd.h" //part of 3DS OpenHaptics
 
 //Global variable and handle declarations
-HDSchedulerHandle hSphereCallback;
+HDSchedulerHandle hCallback;
 HHD hHD;
 
 //Sphere globals (only one sphere for now)
 double sphereRadius;
 vec3<double> spherePosition;
+int buttonState = -99;
 
 //Used to pause the sphere callback and thus force feedback
 
@@ -156,6 +157,31 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
     return HD_CALLBACK_CONTINUE;
 }
 
+
+HDCallbackCode HDCALLBACK CallbackIdle(void *data)
+{
+	// Get the position of the device.
+	vec3<double> cursorPosition;
+	
+	hdBeginFrame(hHD);
+
+	hdGetDoublev(HD_CURRENT_POSITION, cursorPosition);
+	hdGetIntegerv(HD_CURRENT_BUTTONS, &buttonState);
+
+	hdEndFrame(hHD);
+
+	HDErrorInfo error;
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		if (error.errorCode == HD_SCHEDULER_FULL)
+		{
+			return HD_CALLBACK_DONE;
+		}
+	}
+
+	return HD_CALLBACK_CONTINUE;
+}
+
 extern "C" dllexport int init() {
 
     HDErrorInfo error;
@@ -178,7 +204,20 @@ extern "C" dllexport int init() {
 		return(error.errorCode);
     }
 
+	
+
     return(HD_SUCCESS);
+}
+
+extern "C" dllexport int startIdleCallback() {
+	HDErrorInfo error;
+	hCallback = hdScheduleAsynchronous(CallbackIdle, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode);
+	}
+
+	return HD_SUCCESS;
 }
 
 extern "C" dllexport int startCenterCallback(double radius, double x, double y, double z) {
@@ -188,7 +227,7 @@ extern "C" dllexport int startCenterCallback(double radius, double x, double y, 
     spherePosition.z = z;
 
     // Application loop - schedule our call to the main callback.
-    hSphereCallback = hdScheduleAsynchronous(CallbackToSphereCenter, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+    hCallback = hdScheduleAsynchronous(CallbackToSphereCenter, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
 	
 	//Return success/error code
 	HDErrorInfo error;
@@ -200,7 +239,7 @@ extern "C" dllexport int stopCallback() {
 	HDErrorInfo error;
     
 	// For cleanup, unschedule our callbacks and stop the servo loop.
-    hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS);
+    hdWaitForCompletion(hCallback, HD_WAIT_CHECK_STATUS);
 	
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
@@ -208,7 +247,7 @@ extern "C" dllexport int stopCallback() {
 	}
     
 	//unschedule the callback
-	hdUnschedule(hSphereCallback);
+	hdUnschedule(hCallback);
 	
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
@@ -225,7 +264,7 @@ extern "C" dllexport int startSphereCallback(double radius, double x, double y, 
     spherePosition.z = z;
 
     // Application loop - schedule our call to the main callback.
-    hSphereCallback = hdScheduleAsynchronous(FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+    hCallback = hdScheduleAsynchronous(FrictionlessSphereCallback, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
 	//Return success/error code
 	HDErrorInfo error;
 	error = hdGetError();
@@ -252,29 +291,30 @@ extern "C" dllexport void setSpherePosition(double x, double y, double z)
 
 extern "C" dllexport void getEEPosition(double position[3])
 {
-	hdBeginFrame(hHD);
+	//hdBeginFrame(hHD);
     hdGetDoublev(HD_CURRENT_POSITION, position);
-	hdEndFrame(hHD);
+	//hdEndFrame(hHD);
 }
 extern "C" dllexport int getButtonState(int bstate)
 {
-	hdBeginFrame(hHD);
+	//hdBeginFrame(hHD);
     
-	hdGetIntegerv(HD_CURRENT_BUTTONS, &bstate);
-
-	hdEndFrame(hHD);
+	/*hdGetIntegerv(HD_CURRENT_BUTTONS, &bstate);*/
+	bstate = buttonState;
+	return (HD_SUCCESS);
+	//hdEndFrame(hHD);
 
 	//Return success/error code
-	HDErrorInfo error;
+	/*HDErrorInfo error;
 	error = hdGetError();
-	return(error.errorCode);
+	return(error.errorCode);*/
 }
 
 extern "C" dllexport int shutdown() {
 	HDErrorInfo error;
 
     // For cleanup, unschedule our callbacks and stop the servo loop.
-    hdWaitForCompletion(hSphereCallback, HD_WAIT_CHECK_STATUS);
+    hdWaitForCompletion(hCallback, HD_WAIT_CHECK_STATUS);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		return(error.errorCode+1000);
