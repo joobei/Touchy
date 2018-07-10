@@ -97,28 +97,28 @@ extern "C" dllexport int startIdleCallback() {
 }
 
 
-
-extern "C" dllexport int stopCallback() {
-	HDErrorInfo error;
-    
-	// For cleanup, unschedule our callbacks and stop the servo loop.
-    hdWaitForCompletion(hCallback, HD_WAIT_CHECK_STATUS);
-	
-	if (HD_DEVICE_ERROR(error = hdGetError()))
-	{
-		return(error.errorCode);
-	}
-    
-	//unschedule the callback
-	hdUnschedule(hCallback);
-	
-	if (HD_DEVICE_ERROR(error = hdGetError()))
-	{
-		return(error.errorCode);
-	}
-
-	return HD_SUCCESS;
-}
+//
+//extern "C" dllexport int stopCallback() {
+//	HDErrorInfo error;
+//    
+//	// For cleanup, unschedule our callbacks and stop the servo loop.
+//    hdWaitForCompletion(hCallback, HD_WAIT_CHECK_STATUS);
+//	
+//	if (HD_DEVICE_ERROR(error = hdGetError()))
+//	{
+//		return(error.errorCode);
+//	}
+//    
+//	//unschedule the callback
+//	hdUnschedule(hCallback);
+//	
+//	if (HD_DEVICE_ERROR(error = hdGetError()))
+//	{
+//		return(error.errorCode);
+//	}
+//
+//	return HD_SUCCESS;
+//}
 
 
 extern "C" dllexport void getEEPosition(double positions[3])
