@@ -21,13 +21,15 @@
 //#include <cassert>
 //#include <conio.h>
 #include "vector_math.h"
+#include <HDU/hduVector.h>
+#include <HDU/hduError.h>
 using namespace vmath;
-
 
 
 #include "HD/hd.h" //part of 3DS OpenHaptics
 
 //Global variable and handle declarations
+HDSchedulerHandle hIdleCallback;
 HDSchedulerHandle hCallback;
 HHD hHD;
 
@@ -36,7 +38,16 @@ double sphereRadius;
 vec3<double> spherePosition;
 int buttonState = -99;
 
-//Used to pause the sphere callback and thus force feedback
+/* Holds data retrieved from HDAPI. */
+typedef struct
+{
+	HDboolean m_buttonState;       /* Has the device button has been pressed. */
+	hduVector3Dd m_devicePosition; /* Current device coordinates. */
+	HDErrorInfo m_error;
+} DeviceData;
+
+static DeviceData gServoDeviceData;
+
 
 /*******************************************************************************
 Generates a force to drive the cursor to the center of the sphere.
@@ -160,24 +171,26 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 
 HDCallbackCode HDCALLBACK CallbackIdle(void *data)
 {
+	int nButtons = 0;
 	// Get the position of the device.
-	vec3<double> cursorPosition;
-	
+	/*vec3<double> cursorPosition;*/
+
 	hdBeginFrame(hHD);
 
-	hdGetDoublev(HD_CURRENT_POSITION, cursorPosition);
-	hdGetIntegerv(HD_CURRENT_BUTTONS, &buttonState);
+	/* Retrieve the current button(s). */
+	hdGetIntegerv(HD_CURRENT_BUTTONS, &nButtons);
+
+	/* In order to get the specific button 1 state, we use a bitmask to
+	test for the HD_DEVICE_BUTTON_1 bit. */
+	gServoDeviceData.m_buttonState =
+		(nButtons & HD_DEVICE_BUTTON_1) ? HD_TRUE : HD_FALSE;
+
+	/* Get the current location of the device (HD_GET_CURRENT_POSITION)
+	We declare a vector of three doubles since hdGetDoublev returns
+	the information in a vector of size 3. */
+	hdGetDoublev(HD_CURRENT_POSITION, gServoDeviceData.m_devicePosition);
 
 	hdEndFrame(hHD);
-
-	HDErrorInfo error;
-	if (HD_DEVICE_ERROR(error = hdGetError()))
-	{
-		if (error.errorCode == HD_SCHEDULER_FULL)
-		{
-			return HD_CALLBACK_DONE;
-		}
-	}
 
 	return HD_CALLBACK_CONTINUE;
 }
@@ -204,20 +217,17 @@ extern "C" dllexport int init() {
 		return(error.errorCode);
     }
 
-	
-
     return(HD_SUCCESS);
 }
 
 extern "C" dllexport int startIdleCallback() {
 	HDErrorInfo error;
-	hCallback = hdScheduleAsynchronous(CallbackIdle, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
+	hIdleCallback = hdScheduleAsynchronous(CallbackIdle, 0, HD_DEFAULT_SCHEDULER_PRIORITY);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		return(error.errorCode);
 	}
-
-	return HD_SUCCESS;
+	else { return HD_SUCCESS; }
 }
 
 extern "C" dllexport int startCenterCallback(double radius, double x, double y, double z) {
@@ -289,26 +299,18 @@ extern "C" dllexport void setSpherePosition(double x, double y, double z)
     spherePosition.z = z;
 }
 
-extern "C" dllexport void getEEPosition(double position[3])
+extern "C" dllexport void getEEPosition(double positions[3])
 {
-	//hdBeginFrame(hHD);
-    hdGetDoublev(HD_CURRENT_POSITION, position);
-	//hdEndFrame(hHD);
+	positions[0] = gServoDeviceData.m_devicePosition[0];
+	positions[1] = gServoDeviceData.m_devicePosition[1];
+	positions[2] = gServoDeviceData.m_devicePosition[2];
 }
-extern "C" dllexport int getButtonState(int bstate)
-{
-	//hdBeginFrame(hHD);
-    
-	/*hdGetIntegerv(HD_CURRENT_BUTTONS, &bstate);*/
-	bstate = buttonState;
-	return (HD_SUCCESS);
-	//hdEndFrame(hHD);
 
-	//Return success/error code
-	/*HDErrorInfo error;
-	error = hdGetError();
-	return(error.errorCode);*/
+extern "C" dllexport bool getButtonState()
+{
+	return gServoDeviceData.m_buttonState;
 }
+
 
 extern "C" dllexport int shutdown() {
 	HDErrorInfo error;
@@ -317,23 +319,24 @@ extern "C" dllexport int shutdown() {
     hdWaitForCompletion(hCallback, HD_WAIT_CHECK_STATUS);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
-		return(error.errorCode+1000);
+		return(error.errorCode);
+	}
+	hdWaitForCompletion(hIdleCallback, HD_WAIT_CHECK_STATUS);
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		return(error.errorCode + 1000);
 	}
     hdStopScheduler();
+	hdUnschedule(hIdleCallback);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		return(error.errorCode+2000);
 	}
-   /* hdUnschedule(hSphereCallback);
-	if (HD_DEVICE_ERROR(error = hdGetError()))
-	{
-		return(error.errorCode+3000);
-	}*/
+
     hdDisableDevice(hHD);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
-		return(error.errorCode+4000);
+		return(error.errorCode+3000);
 	}
-
 	return HD_SUCCESS;
 }
