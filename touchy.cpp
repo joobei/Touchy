@@ -149,6 +149,67 @@ HDCallbackCode HDCALLBACK CallbackToSphereCenter(void *data)
 }
 
 
+/*******************************************************************************
+Generates an opposing force if the device attempts to penetrate the sphere.
+*******************************************************************************/
+HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
+{
+	// Stiffness, i.e. k value, of the sphere.  Higher stiffness results
+	// in a harder surface.
+	const double sphereStiffness = 1.f;
+
+	hdBeginFrame(hHD);
+
+
+	// Get the position of the device.
+	vec3<double> cursorPosition;
+	hdGetDoublev(HD_CURRENT_POSITION, cursorPosition);
+
+	// Find the distance between the device and the center of the
+	// sphere.
+	vec3<double> newvec = (cursorPosition - spherePosition);
+	double distance = length(newvec);
+
+	// If the user is within the sphere -- i.e. if the distance from the user to
+	// the center of the sphere is less than the sphere radius -- then the user
+	// is penetrating the sphere and a force should be commanded to repel him
+	// towards the surface.
+	if (distance < sphereRadius)
+	{
+		// Calculate the penetration distance.
+		double penetrationDistance = sphereRadius - distance;
+
+		// Create a unit vector in the direction of the force, this will always
+		// be outward from the center of the sphere through the user's
+		// position.
+		vec3<double> forceDirection = (cursorPosition - spherePosition) / distance;
+
+		// Use F=kx to create a force vector that is away from the center of
+		// the sphere and proportional to the penetration distance, and scaled
+		// by the object stiffness.
+		// Hooke's law explicitly:
+		double k = sphereStiffness;
+		vec3<double> x = penetrationDistance * forceDirection;
+		vec3<double> f = k * x;
+		hdSetDoublev(HD_CURRENT_FORCE, f);
+	}
+
+
+	hdEndFrame(hHD);
+
+
+	HDErrorInfo error;
+	if (HD_DEVICE_ERROR(error = hdGetError()))
+	{
+		if (error.errorCode == HD_SCHEDULER_FULL)
+		{
+			return HD_CALLBACK_DONE;
+		}
+	}
+
+	return HD_CALLBACK_CONTINUE;
+}
+
 extern "C" dllexport int init() {
 
     HDErrorInfo error;
@@ -197,6 +258,21 @@ extern "C" dllexport int startCenterCallback(double radius, double x, double y, 
 	return(error.errorCode);
 }
 
+extern "C" dllexport int startSphereCallback(double radius, double x, double y, double z) {
+	sphereRadius = radius;
+	spherePosition.x = x;
+	spherePosition.y = y;
+	spherePosition.z = z;
+
+	// Application loop - schedule our call to the main callback.
+	hCallback = hdScheduleAsynchronous(FrictionlessSphereCallback, 0, HD_MAX_SCHEDULER_PRIORITY);
+
+	//Return success/error code
+	HDErrorInfo error;
+	error = hdGetError();
+	return(error.errorCode);
+}
+
 extern "C" dllexport int getLastError() {
 	HDErrorInfo error;
 	error = hdGetError();
@@ -225,6 +301,15 @@ extern "C" dllexport int stopCallback() {
 	return HD_SUCCESS;
 }
 
+extern "C" dllexport void setSphereRadius(double radius)
+{
+	sphereRadius = radius;
+}
+
+extern "C" dllexport double getSphereRadius()
+{
+	return sphereRadius;
+}
 
 extern "C" dllexport void getEEPosition(double positions[3])
 {
