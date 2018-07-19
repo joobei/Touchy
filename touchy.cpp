@@ -327,21 +327,21 @@ extern "C" dllexport int shutdown() {
 	HDErrorInfo error;
 
     // For cleanup, unschedule our callbacks and stop the servo loop.
-    hdWaitForCompletion(hCallback, HD_WAIT_CHECK_STATUS);
+    /*hdWaitForCompletion(hCallback, HD_WAIT_CHECK_STATUS);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		return(error.errorCode+1000);
-	}
+	}*/
     hdStopScheduler();
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		return(error.errorCode+2000);
 	}
-    hdUnschedule(hCallback);
+    /*hdUnschedule(hCallback);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
 		return(error.errorCode+3000);
-	}
+	}*/
     hdDisableDevice(hHD);
 	if (HD_DEVICE_ERROR(error = hdGetError()))
 	{
