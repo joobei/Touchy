@@ -1,6 +1,6 @@
 <img alt="Touchy Logo" src="https://image.ibb.co/eADw5d/logo.png" width="300" />
 
-### A C/C++ plugin for Phantom Omni and 3DS Touch/TouchX
+### A C# native plugin in C/C++ for Phantom Omni and 3DS Touch/TouchX
 
 `Currently Only supports Windows though it should be straightforward to port it to GNU/Linux.`
 
