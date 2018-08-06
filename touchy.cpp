@@ -160,6 +160,21 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 
 	hdBeginFrame(hHD);
 
+	int nButtons = 0;
+
+	/* Retrieve the current button(s). */
+	hdGetIntegerv(HD_CURRENT_BUTTONS, &nButtons);
+
+	/* In order to get the specific button 1 state, we use a bitmask to
+	test for the HD_DEVICE_BUTTON_1 bit. */
+	gServoDeviceData.m_buttonState =
+		(nButtons & HD_DEVICE_BUTTON_1) ? HD_TRUE : HD_FALSE;
+
+	/* Get the current location of the device (HD_GET_CURRENT_POSITION)
+	We declare a vector of three doubles since hdGetDoublev returns
+	the information in a vector of size 3. */
+	hdGetDoublev(HD_CURRENT_POSITION, gServoDeviceData.m_devicePosition);
+
 
 	// Get the position of the device.
 	vec3<double> cursorPosition;
