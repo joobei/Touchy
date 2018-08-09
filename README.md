@@ -1,15 +1,14 @@
 <img alt="Touchy Logo" src="https://image.ibb.co/eADw5d/logo.png" width="300" />
 
-### A C# native plugin in C/C++ for Phantom Omni and 3DS Touch/TouchX
+### A C#/Unity3D plugin for Phantom Omni and 3DS Touch/TouchX written in C/C++ 
 
 `Currently Only supports Windows though it should be straightforward to port it to GNU/Linux.`
-
 
 This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under development. 
 
 ## Supports:
-- A single Haptic device
-- A single Sphere shape
+- Sphere rendering
+- Gravity well rendering
 
 ### Build requirements:
 * Cmake (unless you want to make a project manually)
