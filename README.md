@@ -2,6 +2,11 @@
 
 ### A C#/Unity3D plugin for Phantom Omni and 3DS Touch/TouchX written in C/C++ 
 
+### Tested With:
+- Sensable Phantom Omni (IEEE 1394 Interface)
+- 3DSystems Touch
+![Sensable Phantom Omni](http://www.mantadesign.com/images/gallery/Sensable%20680x400.jpg)
+
 `Currently Only supports Windows though it should be straightforward to port it to GNU/Linux.`
 
 This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under development. 
