@@ -19,19 +19,14 @@ This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under d
 * [OpenHaptics](http://support1.geomagic.com/Support/5605/5668/en-US/Article/View/2365/How-do-I-download-and-get-Developer-Support-for-OpenHaptics/378) by 3DS (which, ironically, is closed source). The build system will try to locate the header and library files under $(OH_SDK_BASE) Environment variable in Windows.
 * (`Optional`) Set Environment Variable Unity_Plugins_Folder and uncomment the bottom of CMakeLists.txt to make the build system automatically copy the built library to your Assets/Plugins folder.
 
-### Unity Side:
-- Copy the plugin to your Assets/Plugins folder
-- Drag HapticManager.cs script to an Empty GameObject
-- Play
-- HapticManager.cs, in the Start() method, adds a sphere of radius 30 mm at (0,0,0)
+### To use in Unity 3D:
+- Copy the built plugin to your Assets/Plugins folder (or make the build system automatically do it for you - see CMakelists.txt)
+- Create a new c# script that inherits from :Haptic
+- Implement OnStylusButtonDown method
+- (Optional) use stopCallback and startSphereCallback(...) to add a sphere and test your haptic device.
+- Press Play
 
 ### Customize
-- Both the haptic plugin source and the Unity3D manager source is self-explanatory.
+- Both the haptic plugin source and the Unity3D haptic class source are self-explanatory.
 - Due to Unity3D/Mono limitations, if you make changes to the C/C++ library you must completely close and restart unity to load the new build of the .dll.
-- Contributions are welcome.
-
-
-### TODO
-- Multiple Haptic Devices
-- Automatic VR/Haptic calibration method
-- Arbitrary Haptic Shapes
+- Feel free to open an issue with feature requests
