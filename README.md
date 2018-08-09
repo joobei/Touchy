@@ -3,8 +3,8 @@
 ### A C#/Unity3D plugin for Phantom Omni and 3DS Touch/TouchX written in C/C++ 
 
 ### Tested With:
-- Sensable Phantom Omni (IEEE 1394 Interface)<img alt="Sensable Phantom Omni" src="https://www.researchgate.net/profile/Eduardo_Castello/publication/316538856/figure/fig7/AS:487955379822598@1493349036621/Phantom-OMNI-Haptic-Device-by-SensAble-Technologies.jpg" width="200px">
-- 3DSystems Touch <img alt="3D Systems Touch" src="https://www.3dsystems.com/sites/default/files/styles/image_general_full_size/public/2017-12/3d-systems-touch-hero.png" width="200px">
+- <img alt="Sensable Phantom Omni" src="https://www.researchgate.net/profile/Eduardo_Castello/publication/316538856/figure/fig7/AS:487955379822598@1493349036621/Phantom-OMNI-Haptic-Device-by-SensAble-Technologies.jpg" width="200px">Sensable Phantom Omni (IEEE 1394 Interface)
+- <img alt="3D Systems Touch" src="https://www.3dsystems.com/sites/default/files/styles/image_general_full_size/public/2017-12/3d-systems-touch-hero.png" width="170px">3DSystems Touch 
   
 `Currently Only supports Windows though it should be straightforward to port it to GNU/Linux.`
 
