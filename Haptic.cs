@@ -36,7 +36,7 @@ public abstract class Haptic : MonoBehaviour
     public static event StylusAction OnStylusButtonUp;
 
 
-    public override void OnEnable()
+    void OnEnable()
     {
         //initialize haptic device driver
         haptic_error_code = init();
