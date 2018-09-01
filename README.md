@@ -1,6 +1,6 @@
 <img alt="Touchy Logo" src="https://image.ibb.co/eADw5d/logo.png" width="300" />
 
-### A C#/Unity3D plugin for Phantom Omni and 3DS Touch/TouchX written in C/C++ 
+### A Unity3D plugin for Phantom Omni and 3DS Touch/TouchX written in C/C++ 
 
 ### Tested With:
 - <img alt="Sensable Phantom Omni" src="https://www.researchgate.net/profile/Eduardo_Castello/publication/316538856/figure/fig7/AS:487955379822598@1493349036621/Phantom-OMNI-Haptic-Device-by-SensAble-Technologies.jpg" width="200px">Sensable Phantom Omni (IEEE 1394 Interface)
