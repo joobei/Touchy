@@ -36,6 +36,7 @@ vec3<double> spherePosition;
 typedef struct
 {
 	HDboolean m_buttonState;       /* Has the device button has been pressed. */
+	HDboolean m_buttonState2;       /* Has the device button2 has been pressed. */
 	hduVector3Dd m_devicePosition; /* Current device coordinates. */
 	HDErrorInfo m_error;
 } DeviceData;
@@ -58,6 +59,8 @@ HDCallbackCode HDCALLBACK CallbackIdle(void *data)
 	gServoDeviceData.m_buttonState =
 		(nButtons & HD_DEVICE_BUTTON_1) ? HD_TRUE : HD_FALSE;
 
+	gServoDeviceData.m_buttonState2 =
+		(nButtons & HD_DEVICE_BUTTON_2) ? HD_TRUE : HD_FALSE;
 	/* Get the current location of the device (HD_GET_CURRENT_POSITION)
 	We declare a vector of three doubles since hdGetDoublev returns
 	the information in a vector of size 3. */
@@ -94,6 +97,8 @@ HDCallbackCode HDCALLBACK CallbackToSphereCenter(void *data)
 	gServoDeviceData.m_buttonState =
 		(nButtons & HD_DEVICE_BUTTON_1) ? HD_TRUE : HD_FALSE;
 
+	gServoDeviceData.m_buttonState2 =
+		(nButtons & HD_DEVICE_BUTTON_2) ? HD_TRUE : HD_FALSE;
 	/* Get the current location of the device (HD_GET_CURRENT_POSITION)
 	We declare a vector of three doubles since hdGetDoublev returns
 	the information in a vector of size 3. */
@@ -170,6 +175,8 @@ HDCallbackCode HDCALLBACK FrictionlessSphereCallback(void *data)
 	gServoDeviceData.m_buttonState =
 		(nButtons & HD_DEVICE_BUTTON_1) ? HD_TRUE : HD_FALSE;
 
+	gServoDeviceData.m_buttonState2 =
+		(nButtons & HD_DEVICE_BUTTON_2) ? HD_TRUE : HD_FALSE;
 	/* Get the current location of the device (HD_GET_CURRENT_POSITION)
 	We declare a vector of three doubles since hdGetDoublev returns
 	the information in a vector of size 3. */
@@ -243,6 +250,8 @@ HDCallbackCode HDCALLBACK ForceCallback(void *data)
 	gServoDeviceData.m_buttonState =
 		(nButtons & HD_DEVICE_BUTTON_1) ? HD_TRUE : HD_FALSE;
 
+	gServoDeviceData.m_buttonState2 =
+		(nButtons & HD_DEVICE_BUTTON_2) ? HD_TRUE : HD_FALSE;
 	/* Get the current location of the device (HD_GET_CURRENT_POSITION)
 	We declare a vector of three doubles since hdGetDoublev returns
 	the information in a vector of size 3. */
@@ -437,6 +446,11 @@ extern "C" dllexport void getEEPosition(double positions[3])
 extern "C" dllexport bool getButtonState()
 {
 	return gServoDeviceData.m_buttonState;
+}
+
+extern "C" dllexport bool getButtonState2()
+{
+	return gServoDeviceData.m_buttonState2;
 }
 
 extern "C" dllexport int shutdown() {
