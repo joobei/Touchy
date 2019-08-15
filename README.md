@@ -1,4 +1,7 @@
 <img alt="Touchy Logo" src="https://image.ibb.co/eADw5d/logo.png" width="300" />
+<img alt="Crossmodal Learning Logo" src="https://www.crossmodal-learning.org/4034886/cml-logo-200x200-527600dd4d55892300f5b82bd80fc0918e4c070e.png" width="100" />
+<img alt="DFG Logo" src="https://www.dfg.de/zentralablage/bilder/service/logos_corporate_design/logo_international_415.png
+" width="100" />
 
 ### A Unity3D plugin for Phantom Omni and 3DS Touch/TouchX written in C/C++ 
 
