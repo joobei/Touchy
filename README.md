@@ -34,3 +34,6 @@ This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under d
 - Both the haptic plugin source and the Unity3D haptic class source are self-explanatory.
 - Due to Unity3D/Mono limitations, if you make changes to the C/C++ library you must completely close and restart unity to load the new build of the .dll.
 - Feel free to open an issue with feature requests
+
+### Credits
+This project was supported by the German Research Foundation in TRR-169 Cross-Modal Learning and by the National Science Foundation of China (NSFC).
