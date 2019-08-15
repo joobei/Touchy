@@ -1,6 +1,4 @@
-<img alt="Crossmodal Learning Logo" src="https://www.crossmodal-learning.org/4034886/cml-logo-200x200-527600dd4d55892300f5b82bd80fc0918e4c070e.png" width="80" /><img alt="DFG Logo" src="https://www.dfg.de/zentralablage/bilder/service/logos_corporate_design/logo_international_415.png" width="400" />
-
-<br/><img alt="Touchy Logo" src="https://image.ibb.co/eADw5d/logo.png" width="300" />
+<img alt="Touchy Logo" src="https://image.ibb.co/eADw5d/logo.png" width="300" />
 
 
 
@@ -37,4 +35,5 @@ This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under d
 
 ### Credits
 This project was supported by the German Research Foundation in TRR-169 Cross-Modal Learning and by the National Science Foundation of China (NSFC).
-https://www.crossmodal-learning.org/
+https://www.crossmodal-learning.org/<br/>
+<img alt="Crossmodal Learning Logo" src="https://www.crossmodal-learning.org/4034886/cml-logo-200x200-527600dd4d55892300f5b82bd80fc0918e4c070e.png" width="80" /><img alt="DFG Logo" src="https://www.dfg.de/zentralablage/bilder/service/logos_corporate_design/logo_international_415.png" width="400" />
