@@ -75,7 +75,7 @@ HDCallbackCode HDCALLBACK CallbackIdle(void *data)
 }
 
 /*******************************************************************************
-Generates a force to drive the cursor to the center of the sphere.
+Generates a force to drive the cursor to the center of the given coordinates.
 *******************************************************************************/
 HDCallbackCode HDCALLBACK CallbackToSphereCenter(void *data)
 {
