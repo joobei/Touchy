@@ -19,7 +19,7 @@ This is a wrapper for OpenHaptics geared towards Unity3D. This plugin is under d
 
 ### Build requirements:
 * Cmake (unless you want to make a project manually)
-* [OpenHaptics](https://3dssupport.microsoftcrmportals.com/knowledgebase/article/KA-01460/en-us) by 3DS (which, ironically, is closed source). The build system will try to locate the header and library files under $(OH_SDK_BASE) Environment variable in Windows.
+* [OpenHaptics](https://support.3dsystems.com/s/article/Haptic-Device-Drivers?language=en_US) by 3DS (which, ironically, is closed source). The build system will try to locate the header and library files under $(OH_SDK_BASE) Environment variable in Windows.
 * (`Optional`) Set Environment Variable Unity_Plugins_Folder and uncomment the bottom of CMakeLists.txt to make the build system automatically copy the built library to your Assets/Plugins folder.
 
 ### To use in Unity 3D:
